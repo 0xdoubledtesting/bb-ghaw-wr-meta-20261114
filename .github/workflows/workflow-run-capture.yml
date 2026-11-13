@@ -1,0 +1,32 @@
+name: Workflow Run Capture
+
+on:
+  workflow_run:
+    workflows: ["PR Fixture"]
+    types: [completed]
+    branches: ["fixture/pr-meta"]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Record workflow_run metadata only as inert base64 data
+        env:
+          AUTHOR_NAME: ${{ github.event.workflow_run.head_commit.author.name }}
+          AUTHOR_EMAIL: ${{ github.event.workflow_run.head_commit.author.email }}
+          DISPLAY_TITLE: ${{ github.event.workflow_run.display_title }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+          EVENT_NAME: ${{ github.event.workflow_run.event }}
+        run: |
+          for key in AUTHOR_NAME AUTHOR_EMAIL DISPLAY_TITLE HEAD_BRANCH HEAD_REPOSITORY EVENT_NAME; do
+            value="${!key}"
+            printf '%s_B64=' "$key"
+            printf '%s' "$value" | base64 -w0
+            printf '\n'
+          done
