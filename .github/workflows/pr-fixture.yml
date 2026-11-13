@@ -1,0 +1,16 @@
+name: PR Fixture
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Complete the untrusted PR run without executing PR code
+        run: printf '%s\n' 'fixture complete'
