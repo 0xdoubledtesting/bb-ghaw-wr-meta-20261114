@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ["PR Fixture"]
     types: [completed]
-    branches: [main]
+    branches: ["**/merge"]
 
 permissions:
   actions: read
